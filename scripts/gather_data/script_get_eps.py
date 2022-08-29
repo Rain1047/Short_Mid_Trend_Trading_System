@@ -18,13 +18,6 @@ rt = dt.now()
 runtime = str(rt.year) + str(rt.month) + str(rt.day)
 # # define a processing bar
 from tqdm import tqdm
-# import sys, time
-# def process_bar(num, total):
-#         rate = float(num)/total
-#         ratenum =  int(100*rate)
-#         r = '\r[{}{}]{}%'.format('*'*ratenum,' '*(100-ratenum), ratenum)
-#         sys.stdout.write(r)
-#         sys.stdout.flush()
 
 def get_eps(start):
         # create database connection
@@ -66,7 +59,7 @@ def get_eps(start):
                         ticker_eps_annual.to_sql('{}'.format(ticker_symbol_list[i]), con=annual_engine, if_exists='replace',index=None)
                         
                         # ------------------------------- # 
-                        #        get annual eps
+                        #        get quarter eps
                         # ------------------------------- #
                         # Quarter 
                         target_table_02 = target_table[1]
