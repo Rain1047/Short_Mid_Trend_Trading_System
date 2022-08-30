@@ -22,8 +22,15 @@ headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWe
 # 5. net profit margin: get_npm      y&q#
 # ------------------------------        #
 
-rt = dt.now()
-runtime = str(rt.year) + str(rt.month) + str(rt.day)
+# get run time 
+runtime = dt.now()
+if runtime.month < 10:
+    if runtime.day < 10:
+        runtime = str(runtime.year) + '0' + str(runtime.month) + '0' +str(runtime.day)
+    else:
+        runtime = str(runtime.year) + '0' + str(runtime.month) + str(runtime.day)
+else:
+    runtime = str(runtime.year) + str(runtime.month) + str(runtime.day)
 # # define a processing bar
 from tqdm import tqdm
 
@@ -171,3 +178,57 @@ def get_pe(start=0):
                         log_df = pd.concat([log_df,temp_log])
                         log_df.to_sql('{} pe/ratio record'.format(runtime),con=log_engine,if_exists='replace',index=None)         
 
+def get_rev(start=0):
+        # get the list
+        ticker_symbol_list, ticker_name_list = get_name_list(start)
+        ticker_length = len(ticker_symbol_list)
+        # create engine
+        engine = create_engine('sqlite:///././dataset/us/us_ticker_revenue_mac.db')
+        # record result
+        log_df = pd.DataFrame(columns=['symbol','status'])
+        log_engine = create_engine('sqlite:///././dataset/us/us_log_record.db')
+        for i in tqdm(range(ticker_length)):
+                try:
+                        html_data = requests.get('https://www.macrotrends.net/stocks/charts/{}/{}/revenue'.format(ticker_symbol_list[i], ticker_name_list[i]),headers=headers, timeout=20)
+                        soup = BeautifulSoup(html_data.text, 'lxml')
+                        target_table = soup.find_all('table', attrs={'class':'historical_data_table'})
+                        # Annual
+                        target_table_01 = target_table[0]
+                        ticker_revenue_annual = pd.DataFrame(columns=['datetime','revenue'])
+                        log_df = pd.DataFrame(columns=['symbol','status'])
+                        # ------------------------------- # 
+                        #        get annual revenue
+                        # ------------------------------- #
+                        for row in target_table_01.find_all('tr'):
+                                col = row.find_all('td')
+                                len_col = len(col)
+                                if len_col == 2:
+                                        date = col[0].text
+                                        revenue = col[1].text[1:].replace(',','')
+                                        temp = pd.DataFrame([[date, revenue]],columns=['datetime','revenue'])
+                                        ticker_revenue_annual = pd.concat([ticker_revenue_annual,temp],ignore_index=True)
+                        ticker_revenue_annual.dropna(inplace=True)
+                        ticker_revenue_annual.revenue = ticker_revenue_annual.revenue.astype(int)
+                        ticker_revenue_annual.to_sql('{}-Annual'.format(ticker_symbol_list[i]), con=engine, if_exists='replace',index=None)
+
+                        # ------------------------------- # 
+                        #        get quarter revenue
+                        # ------------------------------- #
+                        # Quarter 
+                        target_table_02 = target_table[1]
+                        ticker_revenue_quarter = pd.DataFrame(columns=['datetime','revenue'])
+                        for row in target_table_02.find_all('tr'):
+                                col = row.find_all('td')
+                                len_col = len(col)
+                                if len_col == 2:
+                                        date = col[0].text
+                                        revenue = col[1].text[1:].replace(',','')
+                                        temp = pd.DataFrame([[date, revenue]],columns=['datetime','revenue'])
+                                        ticker_revenue_quarter = pd.concat([ticker_revenue_quarter,temp],ignore_index=True)
+                        ticker_revenue_quarter.revenue = ticker_revenue_quarter.revenue.astype(float)
+                        ticker_revenue_quarter.to_sql('{}-Quarter'.format(ticker_symbol_list[i]),con=engine, if_exists='replace',index=None)
+                except:
+                        status = 'fail'
+                        temp_log = pd.DataFrame([[ticker_symbol_list[i], status]], columns=['symbol', 'status'])
+                        log_df = pd.concat([log_df,temp_log])
+                        log_df.to_sql('{}-revenue-record'.format(runtime),con=log_engine,if_exists='replace',index=None)
