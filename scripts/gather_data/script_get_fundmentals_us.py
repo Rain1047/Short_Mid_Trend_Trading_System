@@ -12,22 +12,36 @@ from bs4 import BeautifulSoup
 # write your own header here
 # get your header at "chrome://version"
 headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
-
+# ------------------------------------- #
+# current availabile:                   #
+# year:y quarter:q                      #
+# 1. eps: get_eps                    y&q#
+# 2. roe: get_roe                      q#
+# 3. pe: get_pe                        q#
+# 4. revenue: get_rev                y&q# 
+# 5. net profit margin: get_npm      y&q#
+# ------------------------------        #
 
 rt = dt.now()
 runtime = str(rt.year) + str(rt.month) + str(rt.day)
 # # define a processing bar
 from tqdm import tqdm
 
-def get_eps(start):
+def get_name_list(start=0):
         # create database connection
         ticker_engine = create_engine('sqlite:///././dataset/us/us_ticker_list_with_name.db')
         ticker_df = pd.read_sql('TOTAL',ticker_engine)
-        # ticker_list = pd.read_csv('ticker_list_with_name.csv')
         ticker_df = ticker_df[start:]
         # convert to list
         ticker_symbol_list = ticker_df.Symbol.to_list()
         ticker_name_list = ticker_df['Company Name'].to_list()
+        return ticker_symbol_list, ticker_name_list
+
+
+# start:从第几个表开始，防止中断，默认为0
+def get_eps(start=0):
+        # get the list
+        ticker_symbol_list, ticker_name_list = get_name_list(start)
         ticker_length = len(ticker_symbol_list)
         # create engine
         annual_engine = create_engine('sqlite:///././dataset/us/us_ticker_eps_annual.db')
@@ -85,14 +99,9 @@ def get_eps(start):
                         log_df.to_sql('{} eps record'.format(runtime),con=log_engine,if_exists='replace',index=None)
 
 
-def get_roe(start):
-        # create database connection
-        ticker_engine = create_engine('sqlite:///././dataset/us/us_ticker_list_with_name.db')
-        ticker_df = pd.read_sql('TOTAL',ticker_engine)
-        ticker_df = ticker_df[start:]
-        # convert to list
-        ticker_symbol_list = ticker_df.Symbol.to_list()
-        ticker_name_list = ticker_df['Company Name'].to_list()
+def get_roe(start=0):
+        # get the list
+        ticker_symbol_list, ticker_name_list = get_name_list(start)
         ticker_length = len(ticker_symbol_list)
         # create engine
         roe_engine = create_engine('sqlite:///././dataset/us/us_ticker_roe.db')
@@ -127,14 +136,9 @@ def get_roe(start):
                         log_df = pd.concat([log_df,temp_log])
                         log_df.to_sql('{} roe record'.format(runtime),con=log_engine,if_exists='replace',index=None)         
 
-def get_pe(start):
-        # create database connection
-        ticker_engine = create_engine('sqlite:///././dataset/us/us_ticker_list_with_name.db')
-        ticker_df = pd.read_sql('TOTAL',ticker_engine)
-        ticker_df = ticker_df[start:]
-        # convert to list
-        ticker_symbol_list = ticker_df.Symbol.to_list()
-        ticker_name_list = ticker_df['Company Name'].to_list()
+def get_pe(start=0):
+        # get the list
+        ticker_symbol_list, ticker_name_list = get_name_list(start)
         ticker_length = len(ticker_symbol_list)
         # create engine
         pe_engine = create_engine('sqlite:///././dataset/us/us_ticker_pe.db')
@@ -166,3 +170,4 @@ def get_pe(start):
                         temp_log = pd.DataFrame([[ticker_symbol_list[i], status]], columns=['symbol', 'status'])
                         log_df = pd.concat([log_df,temp_log])
                         log_df.to_sql('{} pe/ratio record'.format(runtime),con=log_engine,if_exists='replace',index=None)         
+
