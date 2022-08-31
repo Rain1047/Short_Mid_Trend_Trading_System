@@ -16,6 +16,77 @@ def get_name_list(target_add):
             name_list.remove(ticker)
     return name_list
 
+def get_selected_df(selected_df,quarter_df,ticker,targetdate):
+    try:   
+        if len(quarter_df) < targetdate + 7:
+            print('{} data not enough'.format(ticker))
+            return selected_df
+        quarter_df['growth_rate'] = 0
+        for i in range(len(quarter_df)-4):
+            quarter_df.growth_rate.iloc[i] = (quarter_df.eps.iloc[i] - quarter_df.eps.iloc[i+4]) / quarter_df.eps.iloc[i+4]
+        # fix the growth rate
+        quarter_df['fixed_growth_rate'] = 0
+        for i in range(len(quarter_df)-1):
+            quarter_df.fixed_growth_rate.iloc[i] = (quarter_df.growth_rate.iloc[i] + quarter_df.growth_rate.iloc[i+1]) / 2 
+        # pick the ticker
+        if quarter_df.iloc[targetdate].growth_rate > quarter_df.iloc[targetdate+1].growth_rate > quarter_df.iloc[targetdate+2].growth_rate > 0.2 or quarter_df.iloc[targetdate].growth_rate > 1:
+            g1 = quarter_df.iloc[targetdate].growth_rate
+            g2 = quarter_df.iloc[targetdate+1].growth_rate
+            g3 = quarter_df.iloc[targetdate+2].growth_rate
+            temp = pd.DataFrame([[ticker,g1,g2,g3]],columns=['ticker','g1','g2','g3'])
+            selected_df = pd.concat([selected_df,temp])
+            print('{} selected'.format(ticker))
+            return selected_df
+        elif quarter_df.iloc[targetdate].fixed_growth_rate > quarter_df.iloc[targetdate+1].fixed_growth_rate > quarter_df.iloc[targetdate+2].fixed_growth_rate > 0.2 or quarter_df.iloc[targetdate].fixed_growth_rate > 1:
+            g1 = quarter_df.iloc[targetdate].fixed_growth_rate
+            g2 = quarter_df.iloc[targetdate+1].fixed_growth_rate
+            g3 = quarter_df.iloc[targetdate+2].fixed_growth_rate
+            temp = pd.DataFrame([[ticker,g1,g2,g3]],columns=['ticker','g1','g2','g3'])
+            selected_df = pd.concat([selected_df,temp])
+            print('{} selected'.format(ticker))
+            return selected_df
+        else:
+            print('{} not selected'.format(ticker))
+            return selected_df
+    except:
+        print('{} not exsit'.format(ticker))
+        return selected_df
+
+def clean_df(selected_df):
+    selected_df.replace([np.inf, -np.inf], np.nan,inplace=True)
+    selected_df.dropna(axis=0, inplace=True)
+    selected_df.index = range(len(selected_df))
+    return selected_df
+
+# when target date equals to 0, means getting the lastest 
+# when target date equals to 1, means getting the last quarter
+def select_by_eps_fixed(targetdate = 0):
+    # ignore the warnings
+    pd.set_option('mode.chained_assignment', None)
+    # get the name list 
+    target_add = 'sqlite:///./././dataset/us/us_ticker_quarter.db'
+    name_list = get_name_list(target_add)
+    print('name list got')
+    # create the engine
+    quarter_engine = create_engine(target_add)
+    # create the select dataframe
+    selected_df = pd.DataFrame(columns=['ticker','g1','g2','g3'])
+    for ticker in name_list:
+        try:
+            # get the df
+            quarter_df = pd.read_sql('{}'.format(ticker),con=quarter_engine)
+            # get the target time
+            targettime = quarter_df.iloc[targetdate].datetime
+            # use the mehtod get_selected_df
+            selected_df = get_selected_df(selected_df, quarter_df, ticker, targetdate)
+        except:
+            print('{} not exsit'.format(ticker))
+    # 删除inf
+    selected_df = clean_df(selected_df)
+    selected_df.to_csv('./results/selected_ticker_by_eps_{}.csv'.format(targettime),index=None)
+    # selected_df.to_csv('selected_ticker_by_eps.csv',index=None)
+
+
 # when target date equals to 0, means getting the lastest 
 # when target date equals to 1, means getting the last quarter
 def select_by_eps(targetdate = 0):
@@ -24,37 +95,41 @@ def select_by_eps(targetdate = 0):
     # get the name list 
     target_add = 'sqlite:///./././dataset/us/us_ticker_eps_quarter.db'
     name_list = get_name_list(target_add)
+    print('name list got')
     # create the engine
     quarter_engine = create_engine(target_add)
     # create the select dataframe
-    selected_df = pd.DataFrame(columns=['ticker','eps_g1','eps_g2','eps_g3'])
+    selected_df = pd.DataFrame(columns=['ticker','g1','g2','g3'])
     for ticker in name_list:
         try:
-            quarter_eps = pd.read_sql('{}'.format(ticker),con=quarter_engine)
-            if len(quarter_eps) < targetdate + 7:
+            # get the df
+            quarter_df = pd.read_sql('{}'.format(ticker),con=quarter_engine)
+            # get the target time
+            targettime = quarter_df.iloc[targetdate].datetime
+            # change to the method
+            if len(quarter_df) < targetdate + 7:
                 print('{} data not enough'.format(ticker))
-                continue
-            targettime = quarter_eps.iloc[targetdate].datetime
-            quarter_eps['yoy_growth'] = 0
-            for i in range(len(quarter_eps)-4):
-                quarter_eps.yoy_growth.iloc[i] = (quarter_eps.eps.iloc[i] - quarter_eps.eps.iloc[i+4]) / quarter_eps.eps.iloc[i+4]
+                continue 
+            quarter_df['growth_rate'] = 0
+            for i in range(len(quarter_df)-4):
+                quarter_df.growth_rate.iloc[i] = (quarter_df.eps.iloc[i] - quarter_df.eps.iloc[i+4]) / quarter_df.eps.iloc[i+4]
             # fix the growth rate
-            quarter_eps['fixed_yoy_growth'] = 0
-            for i in range(len(quarter_eps)-1):
-                quarter_eps.fixed_yoy_growth.iloc[i] = (quarter_eps.yoy_growth.iloc[i] + quarter_eps.yoy_growth.iloc[i+1]) / 2 
+            quarter_df['fixed_growth_rate'] = 0
+            for i in range(len(quarter_df)-1):
+                quarter_df.fixed_growth_rate.iloc[i] = (quarter_df.growth_rate.iloc[i] + quarter_df.growth_rate.iloc[i+1]) / 2 
             # pick the ticker
-            if quarter_eps.iloc[targetdate].yoy_growth > quarter_eps.iloc[targetdate+1].yoy_growth > quarter_eps.iloc[targetdate+2].yoy_growth > 0.2 or quarter_eps.iloc[targetdate].yoy_growth > 1:
-                eps_g1 = quarter_eps.iloc[targetdate].yoy_growth
-                eps_g2 = quarter_eps.iloc[targetdate+1].yoy_growth
-                eps_g3 = quarter_eps.iloc[targetdate+2].yoy_growth
-                temp = pd.DataFrame([[ticker,eps_g1,eps_g2,eps_g3]],columns=['ticker','eps_g1','eps_g2','eps_g3'])
+            if quarter_df.iloc[targetdate].growth_rate > quarter_df.iloc[targetdate+1].growth_rate > quarter_df.iloc[targetdate+2].growth_rate > 0.2 or quarter_df.iloc[targetdate].growth_rate > 1:
+                g1 = quarter_df.iloc[targetdate].growth_rate
+                g2 = quarter_df.iloc[targetdate+1].growth_rate
+                g3 = quarter_df.iloc[targetdate+2].growth_rate
+                temp = pd.DataFrame([[ticker,g1,g2,g3]],columns=['ticker','g1','g2','g3'])
                 selected_df = pd.concat([selected_df,temp])
                 print('{} selected'.format(ticker))
-            elif quarter_eps.iloc[targetdate].fixed_yoy_growth > quarter_eps.iloc[targetdate+1].fixed_yoy_growth > quarter_eps.iloc[targetdate+2].fixed_yoy_growth > 0.2 or quarter_eps.iloc[targetdate].fixed_yoy_growth > 1:
-                eps_g1 = quarter_eps.iloc[targetdate].fixed_yoy_growth
-                eps_g2 = quarter_eps.iloc[targetdate+1].fixed_yoy_growth
-                eps_g3 = quarter_eps.iloc[targetdate+2].fixed_yoy_growth
-                temp = pd.DataFrame([[ticker,eps_g1,eps_g2,eps_g3]],columns=['ticker','eps_g1','eps_g2','eps_g3'])
+            elif quarter_df.iloc[targetdate].fixed_growth_rate > quarter_df.iloc[targetdate+1].fixed_growth_rate > quarter_df.iloc[targetdate+2].fixed_growth_rate > 0.2 or quarter_df.iloc[targetdate].fixed_growth_rate > 1:
+                g1 = quarter_df.iloc[targetdate].fixed_growth_rate
+                g2 = quarter_df.iloc[targetdate+1].fixed_growth_rate
+                g3 = quarter_df.iloc[targetdate+2].fixed_growth_rate
+                temp = pd.DataFrame([[ticker,g1,g2,g3]],columns=['ticker','g1','g2','g3'])
                 selected_df = pd.concat([selected_df,temp])
                 print('{} selected'.format(ticker))
             else:
@@ -65,10 +140,10 @@ def select_by_eps(targetdate = 0):
     selected_df.replace([np.inf, -np.inf], np.nan,inplace=True)
     selected_df.dropna(axis=0, inplace=True)
     selected_df.index = range(len(selected_df))
-    selected_df.to_csv('./results/selected_ticker_by_eps_{}.csv'.format(targettime),index=None)
+    selected_df.to_csv('./results/selected_ticker_by_{}.csv'.format(targettime),index=None)
     # selected_df.to_csv('selected_ticker_by_eps.csv',index=None)
 
-# revenue_engine = create_engine('sqlite:///./././dataset/us/us_ticker_revenue_mac.db')
+# engine = create_engine('sqlite:///./././dataset/us/us_ticker_revenue_mac.db')
 def select_by_revenue(targetdate = 0):
     # ignore the warnings
     pd.set_option('mode.chained_assignment', None)
@@ -76,39 +151,39 @@ def select_by_revenue(targetdate = 0):
     target_add = 'sqlite:///./././dataset/us/us_ticker_revenue_mac.db'
     name_list = get_name_list(target_add)
     # create the engine
-    revenue_engine = create_engine(target_add)
-    selected_df = pd.DataFrame(columns=['ticker','revenue_g1','revenue_g2','revenue_g3'])
+    engine = create_engine(target_add)
+    selected_df = pd.DataFrame(columns=['ticker','g1','g2','g3'])
     for ticker in name_list:
         try:
-            quarter_revenue = pd.read_sql('{}-Quarter'.format(ticker),con=revenue_engine)
+            quarter_revenue = pd.read_sql('{}-Quarter'.format(ticker),con=engine)
             if len(quarter_revenue) < targetdate + 7:
                 print('{} data not enough'.format(ticker))
                 continue
             targettime = quarter_revenue.iloc[targetdate].datetime
-            quarter_revenue['revenue_growth'] = 0
+            quarter_revenue['growth'] = 0
             for i in range(len(quarter_revenue)-4):
-                quarter_revenue.revenue_growth.iloc[i] = (quarter_revenue.revenue.iloc[i] - quarter_revenue.revenue.iloc[i+4]) / quarter_revenue.revenue.iloc[i+4]
+                quarter_revenue.growth.iloc[i] = (quarter_revenue.revenue.iloc[i] - quarter_revenue.revenue.iloc[i+4]) / quarter_revenue.revenue.iloc[i+4]
             # fix the growth rate
-            quarter_revenue['fixed_revenue_growth'] = 0
+            quarter_revenue['fixed_growth'] = 0
             for i in range(len(quarter_revenue)-1):
-                    quarter_revenue.fixed_revenue_growth.iloc[i] = (quarter_revenue.revenue_growth.iloc[i] + quarter_revenue.revenue_growth.iloc[i+1]) / 2 
+                    quarter_revenue.fixed_growth.iloc[i] = (quarter_revenue.growth.iloc[i] + quarter_revenue.growth.iloc[i+1]) / 2 
             # pick the ticker
-            if quarter_revenue.iloc[targetdate].revenue_growth > quarter_revenue.iloc[targetdate+1].revenue_growth > quarter_revenue.iloc[targetdate+2].revenue_growth > 0.2 or quarter_revenue.iloc[targetdate].revenue_growth > 1:
-                revenue_g1 = quarter_revenue.iloc[targetdate].revenue_growth
-                revenue_g2 = quarter_revenue.iloc[targetdate+1].revenue_growth
-                revenue_g3 = quarter_revenue.iloc[targetdate+2].revenue_growth
-                temp = pd.DataFrame([[ticker,revenue_g1,revenue_g2,revenue_g3]],columns=['ticker','revenue_g1','revenue_g2','revenue_g3'])
+            if quarter_revenue.iloc[targetdate].growth > quarter_revenue.iloc[targetdate+1].growth > quarter_revenue.iloc[targetdate+2].growth > 0.2 or quarter_revenue.iloc[targetdate].growth > 1:
+                g1 = quarter_revenue.iloc[targetdate].growth
+                g2 = quarter_revenue.iloc[targetdate+1].growth
+                g3 = quarter_revenue.iloc[targetdate+2].growth
+                temp = pd.DataFrame([[ticker,g1,g2,g3]],columns=['ticker','g1','g2','g3'])
                 selected_df = pd.concat([selected_df,temp])
                 print('{} selected'.format(ticker))
-            elif quarter_revenue.iloc[targetdate].fixed_revenue_growth > quarter_revenue.iloc[targetdate+1].fixed_revenue_growth > quarter_revenue.iloc[targetdate+2].fixed_revenue_growth > 0.2 or quarter_revenue.iloc[targetdate].fixed_revenue_growth > 1:
-                revenue_g1 = quarter_revenue.iloc[targetdate].fixed_revenue_growth
-                revenue_g2 = quarter_revenue.iloc[targetdate+1].fixed_revenue_growth
-                revenue_g3 = quarter_revenue.iloc[targetdate+2].fixed_revenue_growth
-                temp = pd.DataFrame([[ticker,revenue_g1,revenue_g2,revenue_g3]],columns=['ticker','revenue_g1','revenue_g2','revenue_g3'])
+            elif quarter_revenue.iloc[targetdate].fixed_growth > quarter_revenue.iloc[targetdate+1].fixed_growth > quarter_revenue.iloc[targetdate+2].fixed_growth > 0.2 or quarter_revenue.iloc[targetdate].fixed_growth > 1:
+                g1 = quarter_revenue.iloc[targetdate].fixed_growth
+                g2 = quarter_revenue.iloc[targetdate+1].fixed_growth
+                g3 = quarter_revenue.iloc[targetdate+2].fixed_growth
+                temp = pd.DataFrame([[ticker,g1,g2,g3]],columns=['ticker','g1','g2','g3'])
                 selected_df = pd.concat([selected_df,temp])
                 print('{} selected'.format(ticker))
             else:
-                # print(revenue_g1,revenue_g2,revenue_g3)
+                # print(g1,g2,g3)
                 print('{} not selected'.format(ticker))
         except:
             print('{} not exsit'.format(ticker))
@@ -116,4 +191,4 @@ def select_by_revenue(targetdate = 0):
     selected_df.replace([np.inf, -np.inf], np.nan,inplace=True)
     selected_df.dropna(axis=0, inplace=True)
     selected_df.index = range(len(selected_df))
-    selected_df.to_csv('./results/selected_ticker_by_revenue_{}.csv'.format(targettime),index=None)          
+    selected_df.to_csv('./results/selected_ticker_by_{}.csv'.format(targettime),index=None)          
