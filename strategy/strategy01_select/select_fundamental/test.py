@@ -29,5 +29,8 @@ def select_by_eps_fixed(targetdate = 0):
     target_add = 'sqlite:///./././dataset/us/us_ticker_eps_quarter.db'
     name_list = get_name_list(target_add)
     print('name list got')
+    return name_list
+    
 
-select_by_eps_fixed(0)
+name_list = select_by_eps_fixed(0)
+print(name_list)
