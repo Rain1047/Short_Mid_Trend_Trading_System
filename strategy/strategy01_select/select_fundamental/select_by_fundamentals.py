@@ -64,7 +64,7 @@ def select_by_eps_fixed(targetdate = 0):
     # ignore the warnings
     pd.set_option('mode.chained_assignment', None)
     # get the name list 
-    target_add = 'sqlite:///./././dataset/us/us_ticker_quarter.db'
+    target_add = 'sqlite:///./././dataset/us/us_ticker_eps_quarter.db'
     name_list = get_name_list(target_add)
     print('name list got')
     # create the engine
