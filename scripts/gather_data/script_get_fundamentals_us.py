@@ -232,3 +232,44 @@ def get_rev(start=0):
                         temp_log = pd.DataFrame([[ticker_symbol_list[i], status]], columns=['symbol', 'status'])
                         log_df = pd.concat([log_df,temp_log])
                         log_df.to_sql('{}-revenue-record'.format(runtime),con=log_engine,if_exists='replace',index=None)
+
+# get net margin
+def get_npm(start=0):
+        # get the list
+        ticker_symbol_list, ticker_name_list = get_name_list(start)
+        ticker_length = len(ticker_symbol_list)
+        # create engine
+        npm_engine = create_engine('sqlite:///././dataset/us/us_ticker_npm.db')
+        # record result
+        log_df = pd.DataFrame(columns=['symbol','status'])
+        log_engine = create_engine('sqlite:///././dataset/us/us_log_record.db')
+        for i in tqdm(range(ticker_length)):
+                try:
+                        html_data = requests.get('https://www.macrotrends.net/stocks/charts/{}/{}/net-profit-margin'.format(ticker_symbol_list[i], ticker_name_list[i]),headers=headers, timeout=10)
+                        soup = BeautifulSoup(html_data.text, 'lxml')
+                        target_table = soup.find_all('table')
+                        target_table_01 = target_table[0]
+                        ticker_npm = pd.DataFrame(columns=['datetime','net_profit_margin'])
+                        # ------------------------------- # 
+                        #      get net_profit_margin
+                        # ------------------------------- #
+                        for row in target_table_01.find_all('tr'):
+                                col = row.find_all('td')
+                                len_col = len(col)
+                                if len_col == 4:
+                                        date = col[0].text
+                                        # ttm = col[1].text[1:-1]
+                                        # se = col[2].text[1:-1]
+                                        npm = col[3].text[:-1]
+                                        temp = pd.DataFrame([[date, npm]],columns=['datetime','net_profit_margin'])
+                                        ticker_npm = pd.concat([ticker_npm,temp],ignore_index=True)
+                        if ticker_npm.empty == True:
+                                continue
+                        else:
+                                ticker_npm.net_profit_margin = ticker_npm.net_profit_margin.astype(float)
+                                ticker_npm.to_sql('{}'.format(ticker_symbol_list[i]), con=npm_engine, if_exists='replace',index=None)
+                except:
+                        status = 'fail'
+                        temp_log = pd.DataFrame([[ticker_symbol_list[i], status]], columns=['symbol', 'status'])
+                        log_df = pd.concat([log_df,temp_log])
+                        log_df.to_sql('{} net_profit_margin record'.format(runtime),con=log_engine,if_exists='replace',index=None)         
