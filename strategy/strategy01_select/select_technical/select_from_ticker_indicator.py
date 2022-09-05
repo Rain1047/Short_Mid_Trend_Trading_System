@@ -34,8 +34,8 @@ def select_from_ticker_indicator(target_date):
             try:
                 # print(sample)
                 sample_price_df = pd.read_sql('{}'.format(sample), con=price_engine)
-                start_index = sample_price_df[sample_price_df.datetime == trade_date].index.values[0]
-                start_price = sample_price_df[sample_price_df.datetime == trade_date].Close.values[0]
+                start_index = sample_price_df[sample_price_df.datetime == target_date].index.values[0]
+                start_price = sample_price_df[sample_price_df.datetime == target_date].Close.values[0]
                 if start_price < 12:
                     break
                 else:
