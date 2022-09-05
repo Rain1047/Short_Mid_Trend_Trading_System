@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
 
+# get valid ticker name
 def get_name_list(target_add):
     name_engine = create_engine('sqlite:///./././dataset/us/us_ticker_list_with_name.db')
     target_engine = create_engine(target_add)

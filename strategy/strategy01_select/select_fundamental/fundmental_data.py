@@ -1,4 +1,4 @@
-from tkinter import N
+# from tkinter import N
 import yfinance as yf
 
 # ticker_list 
