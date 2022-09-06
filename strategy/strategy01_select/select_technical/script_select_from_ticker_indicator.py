@@ -2,10 +2,12 @@ import pandas as pd
 from sqlalchemy import create_engine
 ticker_engine = create_engine('sqlite:///./././dataset/us/us_ticker_with_indicator.db')
 price_engine = create_engine('sqlite:///./././dataset/us/us_ticker_seven_year_price.db')
-res_engine = create_engine('sqlite:///select_result/select_result.db')
+res_engine = create_engine('sqlite:///strategy\strategy01_select\select_technical\select_result\select_result.db')
 
 def select_from_ticker_indicator(target_date):
-    # 得到res
+    # 关闭警告的设置方法
+    pd.set_option('mode.chained_assignment', None)
+    # 得到indicator
     df = pd.read_sql('{}'.format(target_date), con=ticker_engine)
     df = df.query('Close > MA20 and Close > year_low*1.25 and Close > year_high * 0.75 and Close> 12 and MA20 > MA50 > MA200')
     df.index = range(len(df))
@@ -16,9 +18,10 @@ def select_from_ticker_indicator(target_date):
     res = df.sort_values(by='rs_rank', ascending=False)
     # ticker_list = res[res.rs_rank > 75].symbol.to_list()
     res = res.query('rs_rank >= 70 and rs_rank <= 95')
-
+    res.index = range(len(res))
     # store the result
-    res.to_sql('{}_res'.format(target_date),if_exists='repalce', index=None, con=res_engine)
+    res.to_sql('{}_res'.format(target_date),if_exists='replace', index=None, con=res_engine)
+    # res.to_csv('{}_res.csv'.format(target_date),index=None)
 
     # # create the test result
     # test_result = pd.DataFrame(columns=['profit_avg_60','profit_avg_90','profit_avg_120','decline_avg_60','declince_avg_90','decline_avg_120'])
