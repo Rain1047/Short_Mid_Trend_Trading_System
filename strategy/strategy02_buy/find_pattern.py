@@ -169,7 +169,7 @@ def find_vcp_test(ticker, date):
 
     # 关闭警告的设置方法
     pd.set_option('mode.chained_assignment', None)
-    # 判断是不是前后5天的极值点
+    # 判断是不是前后10天的极值点
     df['extremum'] = 0
     for i in range(8,df_length):
         if df.low.iloc[i] == df.low.iloc[i-8:i+8].min() :
@@ -218,7 +218,7 @@ def find_vcp_test(ticker, date):
         vol2 = df.iloc[min2_ind].VMA20
         vol3 = df.iloc[min3_ind].VMA20
 
-        if dec1 > max(dec2, dec3) > 0 and min3_ind > 110:
+        if max(dec1, dec2) > dec3 and max(vol1, vol2) > vol3:
             print('{} is vcp in {}'.format(ticker,date))
             print('dec1:{} dec2:{} dec3:{}'.format(dec1,dec2,dec3))
             print('vol1:{} vol2:{} vol3:{}'.format(vol1,vol2,vol3))

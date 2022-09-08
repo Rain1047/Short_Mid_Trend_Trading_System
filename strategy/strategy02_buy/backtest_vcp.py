@@ -3,6 +3,7 @@ from find_pattern import find_vcp_fixed as fvfix
 from find_pattern import find_vcp_test as fvt
 from sqlalchemy import create_engine
 import pandas as pd
+from pattern_vcp import judge_vcp as jv
 
 # Get datetime list 
 def get_date_list(start_date):
@@ -58,8 +59,18 @@ for i in range(0, len(date_list), 3):
 # fv('GOOG','2019-07-30')
 # fv('GOOG','2018-06-13')
 # fv('GOOG','2018-06-13')
-fvt('AMD','2020-07-08')
+# fvt('AMD','2020-07-08')
 
-fvt('LTC','2022-07-12')
+# fvt('LTC','2022-07-12')
 
-fvt('BRT','2022-07-12')
+# fvt('BRT','2022-07-12')
+
+# fvt('TSLA','2021-08-24')
+
+jv('AMD','2020-07-08')
+
+jv('LTC','2022-07-12')
+
+jv('BRT','2022-07-12')
+
+jv('TSLA','2021-08-24')
