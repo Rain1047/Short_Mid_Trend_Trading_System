@@ -27,6 +27,12 @@ def get_fixed_df(ticker_name, ticker_date, time_zone, extrem_zone):
     for i in range(extrem_zone,len(df)):
         if df.close.iloc[i] == df.close.iloc[i-extrem_zone:i+extrem_zone].min() or df.close.iloc[i] == df.close.iloc[i-5:i+5].max() :
             df['extremum'].iloc[i] = 1
+    df['extremum_val'] = 0
+    for i in range(len(df)):
+        if df.iloc[i].extremum == 1:
+            df.extremum_val.iloc[i] = round(df.iloc[i].low,3)
+        elif df.iloc[i].extremum == 2:
+            df.extremum_val.iloc[i] = round(df.iloc[i].high,3)
     return df
 
 # judge vcp
@@ -86,25 +92,25 @@ def find_vcp(ticker_name, target_date, time_zone, extrem_zone, vcp_count):
             vol3 = df.iloc[min3_ind].VMA20
 
             if max(dec1, dec2) > dec3 and max(vol1, vol2) > vol3:
-                print('{} is vcp in {}'.format(ticker_name,target_date))
-                print('dec1:{} dec2:{} dec3:{}'.format(dec1,dec2,dec3))
-                print('vol1:{} vol2:{} vol3:{}'.format(vol1,vol2,vol3))
+                # print('{} is vcp in {}'.format(ticker_name,target_date))
+                # print('dec1:{} dec2:{} dec3:{}'.format(dec1,dec2,dec3))
+                # print('vol1:{} vol2:{} vol3:{}'.format(vol1,vol2,vol3))
                 date1 = df.iloc[min1_ind].datetime
                 date2 = df.iloc[min2_ind].datetime
                 date3 = df.iloc[min3_ind].datetime
-                print('min1:{} min2:{} min3:{}'.format(date1,date2,date3) )
-                print('min3_ind:{}'.format(min3_ind))
+                # print('min1:{} min2:{} min3:{}'.format(date1,date2,date3) )
+                # print('min3_ind:{}'.format(min3_ind))
                 # break
                 return True
             else:
-                print('{} is not vcp in {}'.format(ticker_name, target_date))
-                print('dec1:{} dec2:{} dec3:{}'.format(dec1,dec2,dec3))
-                print('vol1:{} vol2:{} vol3:{}'.format(vol1,vol2,vol3))
+                # print('{} is not vcp in {}'.format(ticker_name, target_date))
+                # print('dec1:{} dec2:{} dec3:{}'.format(dec1,dec2,dec3))
+                # print('vol1:{} vol2:{} vol3:{}'.format(vol1,vol2,vol3))
                 date1 = df.iloc[min1_ind].datetime
                 date2 = df.iloc[min2_ind].datetime
                 date3 = df.iloc[min3_ind].datetime
-                print('min1:{} min2:{} min3:{}'.format(date1,date2,date3) )
-                print('min3_ind:{}'.format(min3_ind))
+                # print('min1:{} min2:{} min3:{}'.format(date1,date2,date3) )
+                # print('min3_ind:{}'.format(min3_ind))
                 # break
                 return False
 
