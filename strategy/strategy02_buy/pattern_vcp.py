@@ -8,7 +8,7 @@ import datetime
 import pandas as pd
 
 # 
-def get_fixed_df(ticker_name, ticker_date, time_zone, extrem_zone):
+def get_vcp_df(ticker_name, ticker_date, time_zone, extrem_zone):
     engine= create_engine('sqlite:///./././dataset/us/us_ticker_price_yf.db')
     df = pd.read_sql('{}'.format(ticker_name), engine)
     df.rename(columns={'hgih':'high'},inplace=True)
@@ -55,7 +55,7 @@ def judge_vcp(ticker_name, target_date):
 # find vcp
 def find_vcp(ticker_name, target_date, time_zone, extrem_zone, vcp_count):
     if vcp_count == 3:
-        df = get_fixed_df(ticker_name, target_date, time_zone, extrem_zone)
+        df = get_vcp_df(ticker_name, target_date, time_zone, extrem_zone)
         index_arr = np.array(df.query('extremum != 0').index)
         price_arr = np.array(df[df.extremum_val != 0].extremum_val)
 
@@ -115,7 +115,7 @@ def find_vcp(ticker_name, target_date, time_zone, extrem_zone, vcp_count):
                 return False
 
     if vcp_count == 2:
-        df = get_fixed_df(ticker_name, target_date, time_zone, extrem_zone)
+        df = get_vcp_df(ticker_name, target_date, time_zone, extrem_zone)
         index_arr = np.array(df.query('extremum != 0').index)
         price_arr = np.array(df[df.extremum_val != 0].extremum_val)
 

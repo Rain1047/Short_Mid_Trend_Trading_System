@@ -4,6 +4,7 @@ from find_pattern import find_vcp_test as fvt
 from sqlalchemy import create_engine
 import pandas as pd
 from pattern_vcp import judge_vcp as jv
+from pattern_cup import judge_cup as jc
 
 # Get datetime list 
 def get_date_list(start_date):
@@ -29,10 +30,10 @@ def get_data_list():
 # -------------------------------------# 
 # Check one tickers in multipul days
 # -------------------------------------# 
-ticker = 'AMD'
-date_list = get_date_list(start_date ='2022-04-27')
-for i in range(0, len(date_list), 3):
-    fvfix('{}'.format(ticker), date_list[i])
+# ticker = 'AMD'
+# date_list = get_date_list(start_date ='2022-04-27')
+# for i in range(0, len(date_list), 3):
+#     fvfix('{}'.format(ticker), date_list[i])
     # print(1)
 
 
@@ -67,10 +68,12 @@ for i in range(0, len(date_list), 3):
 
 # fvt('TSLA','2021-08-24')
 
-jv('AMD','2020-07-08')
+# jv('AMD','2020-07-08')
 
-jv('LTC','2022-07-12')
+# jv('LTC','2022-07-12')
 
-jv('BRT','2022-07-12')
+# jv('BRT','2022-07-12')
 
-jv('TSLA','2021-08-24')
+# jv('TSLA','2021-08-24')
+
+jc('NVDA','2021-10-19')
