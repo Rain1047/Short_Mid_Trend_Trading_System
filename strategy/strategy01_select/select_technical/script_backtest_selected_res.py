@@ -12,7 +12,7 @@ def backtest_res(target_date):
     test_count = 10000
     for i in range(test_count):
         # 抽样
-        samples = res.sample(3)
+        samples = res.sample(10,replace=True)
         samples_list = samples.ticker.to_list()
         # store the data 
         profit_avg_60 = 0.0
@@ -33,8 +33,8 @@ def backtest_res(target_date):
                     sample_price_df = sample_price_df[start_index:]
                     sample_price_df.index = range(len(sample_price_df))
                     # 
-                    max_60 = sample_price_df[0:43].Close.max()
-                    min_60 = sample_price_df[0:43].Close.min()
+                    max_60 = sample_price_df[0:410].Close.max()
+                    min_60 = sample_price_df[0:410].Close.min()
                     max_90 = sample_price_df[0:65].Close.max()
                     min_90 = sample_price_df[0:65].Close.min()
                     max_120 = sample_price_df[0:85].Close.max()
@@ -59,15 +59,15 @@ def backtest_res(target_date):
             except:
                 print('{} is wrong, result invalued'.format(sample))
                 break
-        profit_avg_60 = profit_avg_60 / 3
-        profit_avg_90 = profit_avg_90 / 3
-        profit_avg_120 = profit_avg_120 / 3
-        decline_avg_60 = decline_avg_60 / 3
-        decline_avg_90 = decline_avg_90 / 3
-        decline_avg_120 = decline_avg_120 / 3
+        profit_avg_60 = profit_avg_60 / 10
+        profit_avg_90 = profit_avg_90 / 10
+        profit_avg_120 = profit_avg_120 / 10
+        decline_avg_60 = decline_avg_60 / 10
+        decline_avg_90 = decline_avg_90 / 10
+        decline_avg_120 = decline_avg_120 / 10
         temp = pd.DataFrame([[profit_avg_60,profit_avg_90,profit_avg_120,decline_avg_60,decline_avg_90,decline_avg_120]],columns=['profit_avg_60','profit_avg_90','profit_avg_120','decline_avg_60','declince_avg_90','decline_avg_120'])
         test_result = pd.concat([test_result, temp],ignore_index=True)
     # test_result.to_csv('backtest_result/{}_test_result.csv'.format(target_date),index=None)
-    test_result.to_sql('{}_test_res'.format(target_date),if_exists='replace',index=None, con=b_result_engine)
+    test_result.to_sql('{}_test_res_large'.format(target_date),if_exists='replace',index=None, con=b_result_engine)
     
         

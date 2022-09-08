@@ -13,32 +13,37 @@ def get_date_list(start_date):
     date_list = df.datetime.to_list()
     return date_list
 
-# def get_data_list():
-#     engine = create_engine('sqlite:///./././dataset/us/us_ticker_list_with_name.db')
-#     df = pd.read_sql('TOTAL',con=engine)
-#     ticker_list = df.Symbol.to_list()
-#     return ticker_list
+def get_data_list():
+    engine = create_engine('sqlite:///./././dataset/us/us_ticker_list_with_name.db')
+    df = pd.read_sql('TOTAL',con=engine)
+    ticker_list = df.Symbol.to_list()
+    return ticker_list
 
 
-# date_list = get_date_list(start_date ='2022-04-27')
+
 # ticker_df = pd.read_csv(r'strategy\strategy01_select\select_technical\selected_ticker_list_08_28.csv')
 # ticker_list = ticker_df.symbol.to_list()
 
 
 # -------------------------------------# 
-# Check one tickers in multipul day
+# Check one tickers in multipul days
 # -------------------------------------# 
-# ticker = 'AMD'
-# for i in range(0, len(date_list), 3):
-#     fvfix('{}'.format(ticker), date_list[i])
-#     # print(1)
+ticker = 'AMD'
+date_list = get_date_list(start_date ='2022-04-27')
+for i in range(0, len(date_list), 3):
+    fvfix('{}'.format(ticker), date_list[i])
+    # print(1)
 
+
+# -------------------------------------# 
+# Check multipul tickers in multipul days
+# -------------------------------------# 
 # for ticker in ticker_list:
 #     for i in range(0, len(date_list),2):
 #         fvfix('{}'.format(ticker), date_list[i])
 
 # -------------------------------------# 
-# Check multipul tickers in same day
+# Check multipul tickers in one day
 # -------------------------------------# 
 
 # for ticker in ticker_list:
