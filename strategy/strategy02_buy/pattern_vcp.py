@@ -9,10 +9,8 @@ import pandas as pd
 
 # 
 def get_vcp_df(ticker_name, ticker_date, time_zone, extrem_zone):
-    engine= create_engine('sqlite:///./././dataset/us/us_ticker_price_yf.db')
+    engine= create_engine('sqlite:///./././dataset/us/us_ticker_seven_year_price.db')
     df = pd.read_sql('{}'.format(ticker_name), engine)
-    df.rename(columns={'hgih':'high'},inplace=True)
-    df['chg_pct'] = ((df.close - df.open)/df.open)*80
     df['close'] = df['close'].apply(lambda x: round(x,3))
     df['VMA20'] = ta.SMA(df.volume, timeperiod=20)
     end_index = df[df.datetime == '{}'.format(ticker_date)].index.values[0] + 1
@@ -40,16 +38,16 @@ def judge_vcp(ticker_name, target_date):
     # 200天
     if find_vcp(ticker_name, target_date, 140, 15, 3) == True:
         print('{} might be 3 vcp in {}.'.format(ticker_name, target_date))
-        return 
+        return True
     elif find_vcp(ticker_name, target_date, 140, 10, 3) == True:
         print('{} might be 3 vcp in {}.'.format(ticker_name, target_date))
-        return
+        return True
     elif find_vcp(ticker_name, target_date, 140, 5, 3) == True:
         print('{} might be 3 vcp in {}.'.format(ticker_name, target_date))
-        return
+        return True
     else:
         print('{} is not vcp in {}.'.format(ticker_name, target_date))
-        return
+        return False
     
 
 # find vcp

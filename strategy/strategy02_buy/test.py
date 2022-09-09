@@ -12,13 +12,16 @@
 # else:
 #     print('False')
 
-def get_str(a,b):
-    if a == b:
-        return
-    else:
-        return 'a!b'
+# def get_str(a,b):
+#     if a == b:
+#         return
+#     else:
+#         return 'a!b'
 
-if get_str(3, 3) != None:
-    print('status: {}'.format(get_str(3, 3)))
-else:
-    print('a == b')
+# if get_str(3, 3) != None:
+#     print('status: {}'.format(get_str(3, 3)))
+# else:
+#     print('a == b')
+
+lis_1 = [1,2,3,4,5,6]
+print(lis_1[-1])

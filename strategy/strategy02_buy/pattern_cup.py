@@ -23,13 +23,13 @@ def get_cup_df(ticker_name, target_date, time_zone):
 def judge_cup(ticker_name, target_date):
     if find_cup(ticker_name, target_date, 60) != None:
         print('{} migt be 60-day cup {} in {}.'.format(ticker_name, find_cup(ticker_name, target_date, 60), target_date))
-        return
+        return True
     elif find_cup(ticker_name, target_date, 90) != None:
         print('{} migt be 60-day cup {} in {}.'.format(ticker_name, find_cup(ticker_name, target_date, 90),target_date))
-        return
+        return True
     else:
         print('not cup')
-        return
+        return False
 
 def find_cup(ticker_name, target_date, time_zone):
     window = get_cup_df(ticker_name, target_date, time_zone)
