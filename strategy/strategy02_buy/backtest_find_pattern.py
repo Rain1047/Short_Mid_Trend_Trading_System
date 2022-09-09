@@ -1,10 +1,12 @@
-from find_pattern import find_vcp as fv
-from find_pattern import find_vcp_fixed as fvfix
-from find_pattern import find_vcp_test as fvt
+# from pattern_vcp import find_vcp as jv
+# from find_pattern import find_vcp_fixed as jvfix
+# from find_pattern import find_vcp_test as jv
 from sqlalchemy import create_engine
 import pandas as pd
 from pattern_vcp import judge_vcp as jv
-from pattern_cup import judge_cup as jc
+from pattern_cup import judge_cup as jv
+from pattern_db import judge_db as jd
+from script_find_pattern import find_pattern as fb
 
 # Get datetime list 
 def get_date_list(start_date):
@@ -30,11 +32,10 @@ def get_data_list():
 # -------------------------------------# 
 # Check one tickers in multipul days
 # -------------------------------------# 
-# ticker = 'AMD'
-# date_list = get_date_list(start_date ='2022-04-27')
-# for i in range(0, len(date_list), 3):
-#     fvfix('{}'.format(ticker), date_list[i])
-    # print(1)
+# ticker = 'INTC'
+# date_list = get_date_list(start_date ='2019-10-02')
+# for i in range(0, len(date_list), 2):
+#     jv(ticker, date_list[i])
 
 
 # -------------------------------------# 
@@ -42,7 +43,7 @@ def get_data_list():
 # -------------------------------------# 
 # for ticker in ticker_list:
 #     for i in range(0, len(date_list),2):
-#         fvfix('{}'.format(ticker), date_list[i])
+#         jvfix('{}'.format(ticker), date_list[i])
 
 # -------------------------------------# 
 # Check multipul tickers in one day
@@ -51,22 +52,24 @@ def get_data_list():
 # for ticker in ticker_list:
 #     try:
 #         # for i in range(0, len(date_list),2):
-#         fvfix('{}'.format(ticker), '2022-07-08')
+#         jvfix('{}'.format(ticker), '2022-07-08')
 #     except:
 #         print('error')
-# # fv('INTC','2019-10-25')
-# fv('INTC','2020-01-09')
-# fv('GOOG','2019-07-23')
-# fv('GOOG','2019-07-30')
-# fv('GOOG','2018-06-13')
-# fv('GOOG','2018-06-13')
-# fvt('AMD','2020-07-08')
 
-# fvt('LTC','2022-07-12')
 
-# fvt('BRT','2022-07-12')
+jv('INTC','2019-10-02')
+# jv('INTC','2020-01-09')
+# jv('GOOG','2019-07-23')
+# jv('GOOG','2019-07-30')
+# jv('GOOG','2018-06-13')
+# jv('GOOG','2018-06-13')
+# jv('AMD','2020-07-08')
 
-# fvt('TSLA','2021-08-24')
+# jv('LTC','2022-07-12')
+
+# jv('BRT','2022-07-12')
+
+# jv('TSLA','2021-08-24')
 
 # jv('AMD','2020-07-08')
 
@@ -76,4 +79,6 @@ def get_data_list():
 
 # jv('TSLA','2021-08-24')
 
-jc('NVDA','2021-10-19')
+# jv('NVDA','2021-10-19')
+# jd('AMD', '2021-05-21')
+# jv('AMD', '2021-08-04')

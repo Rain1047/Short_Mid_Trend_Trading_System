@@ -23,5 +23,26 @@
 # else:
 #     print('a == b')
 
-lis_1 = [1,2,3,4,5,6]
-print(lis_1[-1])
+# lis_1 = [1,2,3,4,5,6]
+# print(lis_1[-1])
+
+from script_find_pattern import find_pattern as fp 
+# fp('AMD','2020-05-08')
+
+# fp('LTC','2022-06-12')
+
+# fp('BRT','2022-07-13')
+
+# fp('TSLA','2021-08-14')
+
+# fp('INTC','2020-09-29')
+
+# fp('AMD','2020-01-08')
+
+# fp('LTC','2022-03-12')
+
+# fp('BRT','2022-07-14')
+
+# fp('TSLA','2021-09-02')
+
+# fp('INTC','2020-07-07')
