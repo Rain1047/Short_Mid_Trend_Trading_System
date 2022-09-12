@@ -46,3 +46,11 @@ from script_find_pattern import find_pattern as fp
 # fp('TSLA','2021-09-02')
 
 # fp('INTC','2020-07-07')
+
+# print(int(140 * 0.67))
+
+def re_sta():
+    return 404
+
+if re_sta() == 404:
+    print('error')
