@@ -23,8 +23,6 @@ def get_data_list():
     ticker_list = df.Symbol.to_list()
     return ticker_list
 
-
-
 # ticker_df = pd.read_csv(r'strategy\strategy01_select\select_technical\selected_ticker_list_08_28.csv')
 # ticker_list = ticker_df.symbol.to_list()
 

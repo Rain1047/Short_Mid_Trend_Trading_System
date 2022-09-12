@@ -1,4 +1,4 @@
-# Trade_Repo
+# 中长线交易系统/Medium to long term trading system
 
 ## 中文/Chinese
 
@@ -16,6 +16,8 @@
 6. -trading_system：未来实现自动化交易的接口（未完成）
 
 ## English/英文
+
+<center>brief introduction</center>
 
 In this project, we start by collecting the most basic data, and end by outputting the stocks to be screened and judging the timing of buying. Starting from 0, and finally bulding a complete medium and long-term trend trading system with stock selection, judgment to buy, and judgment to sell has been constructed.
 
