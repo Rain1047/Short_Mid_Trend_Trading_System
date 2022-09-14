@@ -51,6 +51,7 @@ def downtrend_strategy(ticker_name, start_date, end_date):
     rev_h_count = abs(rev_h_index - lowest_index)
     rev_l_count = abs(rev_l_index - lowest_index)
     # 进场点（用于计算收益，取小的index）
+    # get enter_point和enter_prices
     if rev_h_index == rev_l_index == 9999:
         print('can not continue')
         return pd.DataFrame()
@@ -74,6 +75,7 @@ def downtrend_strategy(ticker_name, start_date, end_date):
         else:
             enter_point = rev_h_count
             enter_price = rev_h_price
+
     # 更新df范围，起始点变为进场点
     ticker_df = ticker_df[enter_point:]
     max_30 = max(ticker_df[:int(30/7*5)].Close)
