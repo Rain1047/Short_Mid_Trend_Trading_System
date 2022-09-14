@@ -52,9 +52,22 @@ def downtrend_strategy(ticker_name, start_date, end_date):
     rev_l_count = abs(rev_l_index - lowest_index)
     # 进场点（用于计算收益，取小的index）
     if rev_h_index == rev_l_index == 9999:
-        return pd.DataFrame()
         print('can not continue')
+        return pd.DataFrame()
+    elif rev_h_index == 9999:
+        rev_h_count = 9999
+        rev_l_count = abs(rev_l_index - lowest_index)
+        enter_point = rev_l_count
+        enter_price = rev_l_price
+    elif rev_l_index == 9999:
+        rev_l_count = 9999
+        rev_h_count = abs(rev_h_index - lowest_index)
+        enter_point = rev_h_count
+        enter_price = rev_h_price
     else:
+        # 分别计算到达的时间
+        rev_h_count = abs(rev_h_index - lowest_index)
+        rev_l_count = abs(rev_l_index - lowest_index)
         if rev_l_count < rev_h_count:
             enter_point = rev_l_count
             enter_price = rev_l_price
