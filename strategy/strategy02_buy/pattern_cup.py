@@ -10,7 +10,9 @@ import pandas as pd
 def get_cup_df(ticker_name, target_date, time_zone):
     # 关闭警告的设置方法
     pd.set_option('mode.chained_assignment', None)
+    # 
     engine= create_engine('sqlite:///././dataset/us/us_ticker_seven_year_price.db')
+    # engine= create_engine('sqlite:///././dataset/us/us_ticker_seven_year_price.db')
     df = pd.read_sql('{}'.format(ticker_name), engine)
     df['VMA20'] = ta.SMA(df.Volume, timeperiod=20)
     try:
@@ -64,18 +66,19 @@ def find_cup(ticker_name, target_date, time_zone):
             price_min = window[index_max:].Low.min()
             index_min = window[window.Low == price_min].index.values[0]
             tail = window.tail(3)
+            # 判断交易量的缩放
             len_cut = len(tail[tail.Volume < tail.VMA20])
             # 判断最高价和最低价在0.15-0.5的范围内，并且前两周的价格上升
             if 0.5 > (price_max - price_min) / price_max > 0.15 and window.iloc[0].Close < window.iloc[20].Close and len_cut == 3:
                 if window.tail(1).Close.values[0] <= (price_max - price_min)/3 + price_min:
-                    return 'low zone'
-                    # return 200
+                    # return 'low zone'
+                    return 200
                 elif window.tail(1).Close.values[0] >= price_max - (price_max - price_min)/3:
-                    return 'handle zone'
-                    # return 201
+                    # return 'handle zone'
+                    return 201
                 elif price_max - (price_max - price_min)/3 > window.tail(1).Close.values[0] > (price_max - price_min)/3 + price_min:
-                    return 'cheat zone'
-                    # return 202
+                    # return 'cheat zone'
+                    return 202
                 else:           
                     return 203
             else:
