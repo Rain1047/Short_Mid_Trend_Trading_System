@@ -6,11 +6,22 @@ finish:
 2. 将buy script的输出从文字改成表，方便回测
 
 to_do:
-1. 换NASDAQ和NYSE中的symbol跑一遍select_downtrend
-2. 跑一下更换之后的buy script（存入数据库）
-3. 查看sell的指标
+- [x] 换NASDAQ和NYSE中的symbol跑一遍select_downtrend
+- [X] 跑一下更换之后的buy script（存入数据库）
+- [X] 查看sell的指标，整理出来以供写代码时候用
 
 short review：
 这个任务中我还是倾向用传统的方法，机器学习的部分放到后续项目中，项目主要会围绕机器学习和因子挖掘展开。
 
 本项目已经接近中后部分了，虽然离最后的结尾还有一定的距离。但是在卖出和买入的策略进行一定程度的更新之后就可以开始完整的测试工作了，
+
+
+**2022-09-17**
+今天摆了（见领导）
+
+可以梳理的内容：
+API BINANCE OKX KUCOIN
+策略实战
+
+
+            

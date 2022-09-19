@@ -7,8 +7,8 @@ def downtrend_strategy(ticker_name, start_date, end_date):
     # get spx last time
     spx = pd.read_csv(r'strategy\strategy01_select\select_downtrend\SPX.csv')
     spx.trade_date = spx.trade_date.apply(lambda x: str(x))
-    start_index = spx[spx.trade_date == start_date.replace('-','')].index.values[0]
-    end_index = spx[spx.trade_date == end_date.replace('-','')].index.values[0]
+    start_index = spx[spx.trade_date == start_date].index.values[0]
+    end_index = spx[spx.trade_date == end_date].index.values[0]
     last_count = abs(start_index - end_index)
     try:
         ticker_df = pd.read_sql('{}'.format(ticker_name),con=price_engine)
