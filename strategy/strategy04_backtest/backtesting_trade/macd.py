@@ -6,8 +6,10 @@ import os.path
 import sys
 import backtrader as bt
 from backtrader.indicators import EMA
-
-
+# import the package after installation
+from backtrader_plotly.plotter import BacktraderPlotly
+from backtrader_plotly.scheme import PlotScheme
+import plotly.io
 class TestStrategy(bt.Strategy):
     # 设置全局参数
     params = (
@@ -142,4 +144,13 @@ if __name__ == '__main__':
     
     portfolio_rate = round((final_portfolio - start_portfolio) / start_portfolio,2)
     print('Portfolio Rare:{}'.format(portfolio_rate))
-    cerebro.plot()
+    # cerebro.plot()
+    # define plot scheme with new additional scheme arguments
+    scheme = PlotScheme(decimal_places=5, max_legend_text_width=16)
+
+    # plot and save figures as `plotly` graph object
+    figs = cerebro.plot(BacktraderPlotly(show=True, scheme=scheme))
+    figs = [x for fig in figs for x in fig]  # flatten output
+    for fig in figs:
+        plotly.io.to_html(fig, full_html=False)  # open html in the browser
+        plotly.io.write_html(fig, file='plot.html')  # save the html file
