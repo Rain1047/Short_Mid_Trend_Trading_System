@@ -32,9 +32,11 @@ def get_data_list():
 # -------------------------------------# 
 ticker = 'INTC'
 date_list = get_date_list(ticker_name=ticker, start_date ='2019-10-02')
+res = pd.DataFrame()
 for i in range(0, len(date_list), 2):
-    fb(ticker, date_list[i])
-
+    temp = fb(ticker, date_list[i])
+    res = pd.concat([res,temp],ignore_index=True)
+res.to_csv('res.csv',index=None)
 
 # -------------------------------------# 
 # Check multipul tickers in multipul days
