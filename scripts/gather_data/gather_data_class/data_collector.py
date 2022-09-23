@@ -63,3 +63,5 @@ class data_collector():
 dc = data_collector()
 dc.gather_history('ch')
 # ticker_list = get_ticker_list(market='us')
+
+print(1)
