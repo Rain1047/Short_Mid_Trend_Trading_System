@@ -115,7 +115,7 @@ if __name__ == '__main__':
     data = bt.feeds.GenericCSVData(
         dataname=datapath,
         fromdate=datetime.datetime(2010, 1, 1),
-        todate=datetime.datetime(2020, 4, 12),
+        todate=datetime.datetsime(2020, 4, 12),
         dtformat='%Y%m%d',
         datetime=6,
         open=0,
@@ -153,4 +153,5 @@ if __name__ == '__main__':
     figs = [x for fig in figs for x in fig]  # flatten output
     for fig in figs:
         plotly.io.to_html(fig, full_html=False)  # open html in the browser
-        plotly.io.write_html(fig, file='plot.html')  # save the html file
+        plotly.io.write_html(fig, file=r'strategy\strategy04_backtest\backtesting_trade\test_result\plot.html')  # save the html file
+        # plotly.offline.plot(fig, filename='file1.html')
