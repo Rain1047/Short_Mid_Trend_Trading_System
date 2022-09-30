@@ -1,6 +1,6 @@
 *.db
 
-.vscode
+.vscode/
 dist
 build
 *.egg-info/
